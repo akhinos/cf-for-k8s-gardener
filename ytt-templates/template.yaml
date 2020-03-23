@@ -2,11 +2,6 @@ load("@ytt:base64","base64")
 #@ credentials = self.cf4k8s.credentials()
 ---
 apiVersion: v1
-kind: Namespace
-metadata:
-    name: cf
----
-apiVersion: v1
 kind: Secret
 metadata:
     name: c21s-01.kubeconfig # view func
