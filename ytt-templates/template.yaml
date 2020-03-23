@@ -1,0 +1,17 @@
+load("@ytt:base64","base64")
+#@ credentials = self.cf4k8s.credentials()
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: c21s01c21s
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: c21s-01.kubeconfig # view func
+    namespace: c21s01c21s
+type: Opaque
+data:
+    username: #@ base64.encode(credentials.username)
+    password: #@ base64.encode(credentials.password)
