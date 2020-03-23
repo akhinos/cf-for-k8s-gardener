@@ -2,10 +2,15 @@
 #@ credentials = self.cf4k8s.credentials()
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+    name: kubecf
+---
+apiVersion: v1
 kind: Secret
 metadata:
-    name: c21s-01.kubeconfig #! view func
-    namespace: cf
+    name: kubecf.var-cf-admin-password #! view func
+    namespace: kubecf
 type: Opaque
 data:
     username: #@ base64.encode(credentials.username)
