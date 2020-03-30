@@ -1,0 +1,11 @@
+#@ load("@ytt:base64", "base64")
+#@ load("@ytt:json", "json")
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: registry-credentials
+    namespace: cf-workloads
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: #@  base64.encode(json.encode({"auths":{"gcr.io":{"username":"_json_key","password":self.image_pull_secrets,"auth":base64.encode("_json_key:" + self.image_pull_secrets)}}}))
