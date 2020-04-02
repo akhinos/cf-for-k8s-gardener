@@ -1,14 +1,16 @@
-def init(self,domain=None,image_pull_secrets=None,gcp_service_account={}):
+def init(self,domain=None,docker_registry=None,readonly_docker_registry=None,):
   self.domain = domain
 
-  if not image_pull_secrets:
-    fail("mandatory parameter image_pull_secrets not given")
+  if not docker_registry:
+    fail("Mandatory parameter docker_registry is missing")
 
-  self.image_pull_secrets = image_pull_secrets
+  if not readonly_docker_registry:
+    readonly_docker_registry = docker_registry
 
+  self.readonly_docker_registry = readonly_docker_registry
   self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
   overlays = self.helm("config",glob="ingress.yml") # Skip certificates.yml because it interrupts communication to capi
-  self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",domain=domain,ytt_files=[overlays],namespace="cf-system",gcp_service_account=gcp_service_account)
+  self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",domain=domain,ytt_files=[overlays],namespace="cf-system",docker_registry=docker_registry)
 
 def credentials(self):
   return self.cf4k8s.credentials()
