@@ -11,7 +11,7 @@ Install a SAP flavoured cf-for-k8s using shalm.
    ```yaml
    username: _json_key
    password: <gcp-service-account>
-   repository: gcr.io/sap-se-gcp-istio-dev
+   repository: gcr.io/sap-se-gcp-istio-dev/cf-workloads
    ```
 4. Find out the domain (e.g. from your gardener shoot by prefixing it with `cf.ingress` )
 5. Set your `KUBECONFIG` environment variable accordingly
@@ -41,7 +41,7 @@ If you would like to have separate secrets for pulling images, you have to creat
    ```yaml
    username: _json_key
    password: <readonly-gcp-service-account>
-   repository: gcr.io/sap-se-gcp-istio-dev
+   repository: gcr.io/sap-se-gcp-istio-dev/cf-workloads
    ```
 
 and pass this with the following flags to the installation
