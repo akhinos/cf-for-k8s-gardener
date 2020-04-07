@@ -1,3 +1,4 @@
+#@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 
 #@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingress"}}), overlay.subset({"kind": "Gateway"}))
@@ -6,7 +7,7 @@ spec:
   servers:
   #@overlay/append
   - hosts:
-    - '*.{{ .Values.domain }}'
+    - #@ "*." + data.values.system_domain
     port:
       name: https-apps-example-com
       number: 443

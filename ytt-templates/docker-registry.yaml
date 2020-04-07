@@ -1,3 +1,4 @@
+#@ if self.readonly_docker_registry:
 #@ load("@ytt:base64", "base64")
 #@ load("@ytt:json", "json")
 #@ server = self.readonly_docker_registry.repository.partition("/")[0]
@@ -12,3 +13,4 @@ metadata:
 type: kubernetes.io/dockerconfigjson
 data:
   .dockerconfigjson: #@  base64.encode(json.encode(docker_config))
+#@ end
