@@ -1,6 +1,6 @@
 def init(self,domain=None,docker_registry=None,readonly_docker_registry=None,):
   self.domain = domain
-
+  self.__class__.name = "cf-for-k8s-gardener"
   if not docker_registry:
     fail("Mandatory parameter docker_registry is missing")
 
