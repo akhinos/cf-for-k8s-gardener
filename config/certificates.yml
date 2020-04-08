@@ -6,7 +6,7 @@ spec:
   servers:
   #@overlay/append
   - hosts:
-    - '*.{{ .Values.domain }}'
+    - '*.{{ .Values.domain | replace "cf.ingress" "cfa.ingress" }}'
     port:
       name: https-apps-example-com
       number: 443
