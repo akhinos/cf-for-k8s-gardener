@@ -3,13 +3,14 @@
 
 #@overlay/match by=overlay.subset({"kind":"Service", "metadata":{"name":"istio-ingressgateway"}})
 ---
-  metadata:
-    #@overlay/replace
-    annotations:
-      cert.gardener.cloud/secretname: {{ .Values.istio_ingressgateway_credential_name }}
-      dns.gardener.cloud/class: garden
-      dns.gardener.cloud/dnsnames: "*.{{ .Values.domain }}"
-      dns.gardener.cloud/ttl: "600"
+metadata:
+  #@overlay/merge
+  #@overlay/match missing_ok=True
+  annotations:
+    cert.gardener.cloud/secretname: {{ .Values.istio_ingressgateway_credential_name }}
+    dns.gardener.cloud/class: garden
+    dns.gardener.cloud/dnsnames: "*.{{ .Values.domain }}"
+    dns.gardener.cloud/ttl: "600"
 
 #@overlay/match by=overlay.subset({"kind":"Gateway", "metadata":{"name":"istio-ingressgateway"}})
 ---
