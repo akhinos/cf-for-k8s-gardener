@@ -7,8 +7,7 @@ def init(self,domain=None,docker_registry=None,readonly_docker_registry=None,):
   self.readonly_docker_registry = readonly_docker_registry
   self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
   overlays = self.helm("config",glob="ingress.yml") # Skip certificates.yml because it interrupts communication to capi
-  # self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",domain=domain,ytt_files=[overlays],namespace="cf-system",docker_registry=docker_registry)
-  self.cf4k8s = chart("../cf-for-k8s",domain=domain,ytt_files=[overlays],namespace="cf-system",docker_registry=docker_registry)
+  self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",domain=domain,ytt_files=[overlays],namespace="cf-system",docker_registry=docker_registry)
 
 def domain(self):
   return self.cf4k8s.domain
