@@ -1,6 +1,10 @@
 # [Gardener](https://gardener.cloud/) flavoured cf-for-k8s shalm chart
 
-Install a [gardener](https://gardener.cloud/) flavoured cf-for-k8s using shalm.
+Install a [gardener](https://gardener.cloud/) flavoured cf-for-k8s using shalm. This chart enhances `cf-for-k8s` with the following features:
+
+* Calculate the cf domain from the kubernetes api host
+* Automatically create a DNS entry for the cf domain
+* Automatically create a wildcard certificate for the cf domain
 
 ## Installation
 
