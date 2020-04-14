@@ -68,6 +68,6 @@ The following applications are known to work:
 * [node app from cf-for-k8s](https://github.com/cloudfoundry/cf-for-k8s/tree/master/tests/smoke/assets/test-node-app)
 * [go app from go-buildpack](https://github.com/cloudfoundry/go-buildpack/tree/master/fixtures/go_mod_app)
 
-The following applications are not working
+The following applications are not working:
 
-* [dora from acceptance](https://github.com/cloudfoundry/cf-acceptance-tests/tree/master/assets/dora)
+* [dora from cf-acceptance-tests](https://github.com/cloudfoundry/cf-acceptance-tests/tree/master/assets/dora)
