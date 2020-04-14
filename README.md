@@ -1,6 +1,6 @@
-# SAP flavoured cf-for-k8s shalm chart
+# [Gardener](https://gardener.cloud/) flavoured cf-for-k8s shalm chart
 
-Install a SAP flavoured cf-for-k8s using shalm.
+Install a [gardener](https://gardener.cloud/) flavoured cf-for-k8s using shalm.
 
 ## Installation
 
@@ -41,4 +41,16 @@ and pass this with the following flags to the installation
 
 ```
 --set-yaml readonly_docker_registry=/tmp/readonly-docker-registry.yaml
+```
+
+## Ease the creation of `docker-registry.yaml` for a google cloud based repository
+
+```bash
+export GCR_ADMIN_CREDENTIALS=..
+export PRIVATE_HUB=gcr.io/...
+jq -n --arg username _json_key \
+      --arg password "$GCR_ADMIN_CREDENTIALS" \
+      --arg repository $PRIVATE_HUB/cf-workloads \
+      '{"username":$username, "password":$password, "repository":$repository}' \
+      > /tmp/docker-registry.json
 ```
