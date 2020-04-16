@@ -1,0 +1,13 @@
+#@data/values
+---
+cf_blobstore:
+  access_key: "?????????"
+  secret_key: "?????????"
+
+capi:
+  blobstore:
+    region: "eu-central-1"
+    package_directory_key: cki-772-cc-packages
+    droplet_directory_key: cki-772-cc-droplets
+    resource_directory_key: cki-772-cc-resources
+    buildpack_directory_key: cki-772-cc-buildpacks

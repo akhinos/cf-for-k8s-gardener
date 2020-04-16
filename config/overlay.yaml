@@ -1,0 +1,45 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+#@ load("@ytt:yaml", "yaml")
+
+
+#@ def replace_cc_config():
+#@overlay/match
+resource_pool:
+  #@overlay/replace via=replace_fog_connection
+  fog_connection:
+packages:
+  #@overlay/replace via=replace_fog_connection
+  fog_connection:
+droplets:
+  #@overlay/replace via=replace_fog_connection
+  fog_connection:
+buildpacks:
+  #@overlay/replace via=replace_fog_connection
+  fog_connection:
+#@ end
+
+#@ def replace_fog_connection(old, new):
+#@ return overlay.apply(old, remove_fields())
+#@ end
+
+#@ def remove_fields():
+#@overlay/remove
+endpoint: http://cf-blobstore-minio.cf-blobstore.svc.cluster.local:9000
+#@overlay/remove
+aws_signature_version: "2"
+#@overlay/remove
+path_style: true
+#@ end
+
+#@ def decode_and_replace(old, new):
+#@   return yaml.encode(overlay.apply(yaml.decode(old), replace_cc_config()))
+#@ end
+
+#@ configMap = overlay.subset({"kind": "ConfigMap"})
+#@ ccName = overlay.subset({"metadata": {"name": "cloud-controller-ng-yaml"}})
+#@overlay/match by=overlay.and_op(configMap, ccName)
+---
+data:
+  #@overlay/replace via=decode_and_replace
+  cloud_controller_ng.yml:
