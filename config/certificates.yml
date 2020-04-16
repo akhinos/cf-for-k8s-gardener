@@ -7,7 +7,14 @@ spec:
   servers:
   #@overlay/append
   - hosts:
+    - #@ data.values.system_domain
     - #@ "*." + data.values.system_domain
+    - #@ "*.authentication." + data.values.system_domain
+    - #@ "*.xsuaa-api." + data.values.system_domain
+    - #@ "*.dt.cpp." + data.values.system_domain
+    - #@ "*.cpp." + data.values.system_domain
+    - #@ "*.cockpit." + data.values.system_domain
+    - #@ "operator.operationsconsole." + data.values.system_domain
     port:
       name: https-apps-example-com
       number: 443
