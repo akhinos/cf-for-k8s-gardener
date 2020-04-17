@@ -7,8 +7,8 @@ spec:
   servers:
   #@overlay/append
   - hosts:
-    {{- range $sub_domain := .Values.sub_domains }}
-    - #@ "{{ $sub_domain }}" + data.values.system_domain
+    {{- range $app_domain := .Values.cf4k8s.app_domains }}
+    - "{{ $app_domain }}"
     {{- end }}
     port:
       name: https-apps-example-com
