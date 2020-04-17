@@ -1,5 +1,5 @@
 def init(self,domain=None, docker_registry=None, readonly_docker_registry=None, 
-         sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ]
+         sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ],
          app_domain_prefix = "apps."):
   self.__class__.name = "cf-for-k8s-gardener"
 
