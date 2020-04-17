@@ -1,6 +1,11 @@
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 
+#@ dnsnames = []
+{{- range $sub_domain := .Values.sub_domains }}
+#@ dnsnames.append("{{ $sub_domain }}" + data.values.system_domain)
+{{- end }}
+
 #@overlay/match by=overlay.subset({"kind":"Service", "metadata":{"name":"istio-ingressgateway"}})
 ---
 metadata:
@@ -9,7 +14,7 @@ metadata:
   annotations:
     cert.gardener.cloud/secretname: {{ .Values.istio_ingressgateway_credential_name }}
     dns.gardener.cloud/class: garden
-    dns.gardener.cloud/dnsnames: #@ data.values.system_domain + ",*." + data.values.system_domain + ",*.authentication." + data.values.system_domain + ",*.xsuaa-api." + data.values.system_domain + ",*.dt.cpp." + data.values.system_domain + ",*.cpp." + data.values.system_domain + ",*.cockpit." + data.values.system_domain + ",operator.operationsconsole." + data.values.system_domain
+    dns.gardener.cloud/dnsnames: #@ ",".join(dnsnames)
     dns.gardener.cloud/ttl: "600"
 
 #@overlay/match by=overlay.subset({"kind":"Gateway", "metadata":{"name":"istio-ingressgateway"}})

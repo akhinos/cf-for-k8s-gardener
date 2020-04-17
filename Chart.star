@@ -1,9 +1,10 @@
-def init(self,domain=None,docker_registry=None,readonly_docker_registry=None,):
+def init(self,domain=None, docker_registry=None, readonly_docker_registry=None, sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ]):
   self.__class__.name = "cf-for-k8s-gardener"
 
   if not readonly_docker_registry:
     readonly_docker_registry = docker_registry
 
+  self.sub_domains = sub_domains
   self.readonly_docker_registry = readonly_docker_registry
   self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
   overlays = self.helm("config",glob="ingress.yml") # Skip certificates.yml because it interrupts communication to capi
@@ -20,7 +21,7 @@ def uaa_credentials(self):
 
 def _set_domain(self,k8s):
   if not self.cf4k8s.domain:
-    self.cf4k8s.domain = "cf.ingress." + k8s.host.partition('.')[2]
+    self.cf4k8s.domain = "cf." + k8s.host.partition('.')[2]
 
 def apply(self,k8s):
   self._set_domain(k8s)
