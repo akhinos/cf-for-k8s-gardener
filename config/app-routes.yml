@@ -1,14 +1,14 @@
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 
-#@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingress"}}), overlay.subset({"kind": "Gateway"}))
+#@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingress", "namespace" : "cf-workloads"}}), overlay.subset({"kind": "Gateway"}))
 ---
 spec:
   servers:
   #@overlay/append
   - hosts:
     {{- range $app_domain := .Values.cf4k8s.app_domains }}
-    - "{{ $app_domain }}"
+    - "*.{{ $app_domain }}"
     {{- end }}
     port:
       name: https-apps-example-com

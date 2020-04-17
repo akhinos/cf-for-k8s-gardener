@@ -6,7 +6,7 @@
 #@ dnsnames.append("{{ $sub_domain }}" + data.values.system_domain)
 {{- end }}
 {{- range $app_domain := .Values.cf4k8s.app_domains }}
-#@ dnsnames.append("{{ $app_domain }}")
+#@ dnsnames.append("*.{{ $app_domain }}")
 {{- end }}
 
 #@overlay/match by=overlay.subset({"kind":"Service", "metadata":{"name":"istio-ingressgateway"}})
