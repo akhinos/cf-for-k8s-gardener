@@ -1,0 +1,12 @@
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.subset({"metadata":{"name":"capi-kpack-watcher", "namespace" : "cf-system"}, "kind": "Deployment"})
+---
+spec:
+  template:
+    #@overlay/match missing_ok=True
+    metadata:
+      #@overlay/merge
+      #@overlay/match missing_ok=True
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundIPRanges: 100.64.0.1/32
