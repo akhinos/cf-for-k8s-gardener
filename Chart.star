@@ -1,7 +1,7 @@
 def init(self,domain=None, docker_registry=None, readonly_docker_registry=None, 
          sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ],
          app_domain_prefix = "apps.",
-         db_chart_url = "https://github.com/akhinos/postgres-shalm/archive/master.zip"):
+         db_chart_url = None):
   self.__class__.name = "cf-for-k8s-gardener"
 
   if not readonly_docker_registry:
