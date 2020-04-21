@@ -1,0 +1,12 @@
+{{- if .Values.cc_db }}
+#@data/values
+---
+capi:
+  database:
+    adapter: {{ .Values.cc_db_values.adapter }}
+    host: {{ .Values.cc_db_values.host }}
+    port: {{ .Values.cc_db_values.port }}
+    user: {{ .Values.cc_db_values.user }}
+    password: {{ .Values.cc_db_values.password }}
+    name: {{ .Values.cc_db_values.database }}
+{{- end }}
