@@ -43,7 +43,7 @@ def _overlays(self):
   return [ self.helm("config/values"), self.helm("config/overlays") ]
 
 def apply(self,k8s):
-  if self.cc_db:
+  if hasattr(self, 'cc_db'):
     self.cc_db.apply(k8s)
     self.cc_db_values.password = self.cc_db.get_password(k8s)
 
