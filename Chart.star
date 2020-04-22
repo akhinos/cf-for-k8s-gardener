@@ -52,12 +52,13 @@ def apply(self,k8s):
   self.fix_kpack_watcher(k8s)
 
 def fix_kpack_watcher(self,k8s):
+  k8s.tool = "kubectl"
   k8s_service = k8s.get("service","kubernetes",namespace="default")
   kpack_watcher = k8s.get("deployments.apps","capi-kpack-watcher",namespace="cf-system")
-  print(kpack_watcher.spec.template.metadata)
   if not kpack_watcher.spec.template.metadata.get('annotations',None):
     kpack_watcher.spec.template.metadata.annotations = {}
   kpack_watcher.spec.template.metadata.annotations['traffic.sidecar.istio.io/excludeOutboundIPRanges'] = k8s_service.spec.clusterIP + '/32'
+  k8s.tool = "kubectl"
   k8s.apply(kpack_watcher,namespace="cf-system")
 
 def delete(self,k8s):
