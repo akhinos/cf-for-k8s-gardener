@@ -14,6 +14,7 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
     ytt_files=self._overlays,  # must be lazy
     namespace="cf-system",
     docker_registry=docker_registry)
+  self.cc_db = None
   if db_chart_url:
     self.cc_db = chart(db_chart_url, namespace="c21s-db")
     self.cc_db_values = {}
@@ -42,7 +43,7 @@ def _overlays(self):
   return [ self.helm("config/values"), self.helm("config/overlays") ]
 
 def apply(self,k8s):
-  if hasattr(self, 'cc_db'):
+  if self.cc_db:
     self.cc_db.apply(k8s)
     self.cc_db_values.password = self.cc_db.get_password(k8s)
 
