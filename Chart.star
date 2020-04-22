@@ -1,6 +1,6 @@
 def init(self,domain=None, docker_registry=None, readonly_docker_registry=None, 
          sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ],
-         app_domain_prefix = "apps.",
+         app_domain_prefix = None,
          db_chart_url = None):
   self.__class__.name = "cf-for-k8s-gardener"
 
@@ -8,7 +8,6 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
     readonly_docker_registry = docker_registry
   self.sub_domains = sub_domains
   self.readonly_docker_registry = readonly_docker_registry
-  self.app_domain_prefix =  app_domain_prefix
   self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
   self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",
     domain=domain,
@@ -37,7 +36,7 @@ def uaa_credentials(self):
 def _set_domain(self,k8s):
   if not self.cf4k8s.domain:
     self.cf4k8s.domain = "cf." + k8s.host.partition('.')[2]
-  self.cf4k8s.app_domains= [ self.app_domain_prefix + self.cf4k8s.domain.partition('.')[2] ]
+  self.cf4k8s.app_domains= [ self.cf4k8s.domain ]
 
 def _overlays(self):
   return [ self.helm("config/values"), self.helm("config/overlays") ]
@@ -50,6 +49,16 @@ def apply(self,k8s):
   self._set_domain(k8s)
   self.cf4k8s.apply(k8s)
   self.__apply(k8s)
+  self.fix_kpack_watcher(k8s)
+
+def fix_kpack_watcher(self,k8s):
+  k8s_service = k8s.get("service","kubernetes",namespace="default")
+  kpack_watcher = k8s.get("deployments.apps","capi-kpack-watcher",namespace="cf-system")
+  print(kpack_watcher.spec.template.metadata)
+  if not kpack_watcher.spec.template.metadata.get('annotations',None):
+    kpack_watcher.spec.template.metadata.annotations = {}
+  kpack_watcher.spec.template.metadata.annotations['traffic.sidecar.istio.io/excludeOutboundIPRanges'] = k8s_service.spec.clusterIP + '/32'
+  k8s.apply(kpack_watcher,namespace="cf-system")
 
 def delete(self,k8s):
   self._set_domain(k8s)

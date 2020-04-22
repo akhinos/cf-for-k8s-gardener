@@ -17,3 +17,18 @@ spec:
     tls:
       credentialName: {{ .Values.istio_ingressgateway_credential_name }}
       mode: SIMPLE
+
+#@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingressgateway", "namespace" : "cf-system"}}), overlay.subset({"kind": "Gateway"}))
+---
+spec:
+  #@ hosts = []
+  #@ for service in ["api", "uaa" , "login" , "log-cache"]:
+  #@   hosts.append(service + "." + data.values.system_domain)
+  #@ end
+  #@overlay/match missing_ok=True 
+  servers:
+    #@overlay/match by=overlay.all,expects="0+" 
+    - #@overlay/match by=overlay.all,expects="0+" 
+      #@overlay/match missing_ok=True 
+      #@overlay/replace
+      hosts: #@ hosts
