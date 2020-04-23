@@ -1,0 +1,7 @@
+#@overlay/match by=overlay.subset({"kind":"Builder", "metadata":{"namespace": "cf-workloads-staging", "name":"cf-autodetect-builder"}})
+---
+spec:
+  #@overlay/replace
+  #@overlay/match missing_ok=True
+  image: gcr.io/paketo-buildpacks/builder:full-cf
+    
