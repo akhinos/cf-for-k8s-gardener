@@ -1,0 +1,36 @@
+{{ if .Values.certificate }}
+---
+apiVersion: kapp.k14s.io/v1alpha1
+kind: Config
+rebaseRules:
+- path: [data]
+  type: copy
+  sources: [existing, new]
+  resourceMatchers:
+  - kindNamespaceNameMatcher:
+      kind: Secret
+      namespace: istio-system
+      name: {{ .Values.istio_ingressgateway_credential_name }}
+- path: [metadata, labels, cert.gardener.cloud/certificate-hash]
+  type: copy
+  sources: [existing, new]
+  resourceMatchers:
+  - kindNamespaceNameMatcher:
+      kind: Secret
+      namespace: istio-system
+      name: {{ .Values.istio_ingressgateway_credential_name }}
+---
+apiVersion: v1
+data:
+  ca.crt: {{ index .Values.certificate "ca.crt"}}
+  tls.crt: {{ index .Values.certificate "tls.crt"}}
+  tls.key: {{ index .Values.certificate "tls.key"}}
+kind: Secret
+metadata:
+  labels:
+    cert.gardener.cloud/certificate: "true"
+    cert.gardener.cloud/certificate-hash: {{ index .Values.certificate "certificate-hash"}}
+  name: {{ .Values.istio_ingressgateway_credential_name }}
+  namespace: istio-system
+type: Opaque
+{{ end }}

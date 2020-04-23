@@ -1,12 +1,13 @@
 def init(self,domain=None, docker_registry=None, readonly_docker_registry=None, 
          sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ],
-         app_domain_prefix = None,
+         certificate = None,
          db_chart_url = None):
   self.__class__.name = "cf-for-k8s-gardener"
 
   if not readonly_docker_registry:
     readonly_docker_registry = docker_registry
   self.sub_domains = sub_domains
+  self.certificate = certificate
   self.readonly_docker_registry = readonly_docker_registry
   self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
   self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",

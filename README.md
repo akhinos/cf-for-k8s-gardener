@@ -71,3 +71,14 @@ The following applications are known to work:
 The following applications are not working:
 
 * [dora from cf-acceptance-tests](https://github.com/cloudfoundry/cf-acceptance-tests/tree/master/assets/dora)
+
+## Prevent LE rate limit
+
+After the first installation create a backup of the certificate:
+```bash
+kubectl get secrets -n istio-system cf-4-k8s-ingressgateway-certs -o json | \
+  jq '{ "ca.crt": .data["ca.crt"], "tls.crt": .data["tls.crt"], "certificate-hash": .metadata.labels["cert.gardener.cloud/certificate-hash"] }' \
+  > certificate.json
+```
+
+When installing again provide `--set-yaml certificate=certificate.json` to shalm.
