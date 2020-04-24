@@ -77,7 +77,7 @@ The following applications are not working:
 After the first installation create a backup of the certificate:
 ```bash
 kubectl get secrets -n istio-system cf-4-k8s-ingressgateway-certs -o json | \
-  jq '{ "ca.crt": .data["ca.crt"], "tls.crt": .data["tls.crt"], "certificate-hash": .metadata.labels["cert.gardener.cloud/certificate-hash"] }' \
+  jq '{ "ca.crt": .data["ca.crt"], "tls.crt": .data["tls.crt"], "tls.key": .data["tls.key"], "certificate-hash": .metadata.labels["cert.gardener.cloud/certificate-hash"] }' \
   > certificate.json
 ```
 
