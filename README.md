@@ -82,3 +82,12 @@ kubectl get secrets -n istio-system cf-4-k8s-ingressgateway-certs -o json | \
 ```
 
 When installing again provide `--set-yaml certificate=certificate.json` to shalm.
+
+
+## Testing
+
+Tests can be run with
+
+```bash
+shalm test test/*.star
+```
