@@ -3,5 +3,5 @@
 spec:
   #@overlay/replace
   #@overlay/match missing_ok=True
-  image: gcr.io/paketo-buildpacks/builder:full-cf
+  image: gcr.io/peripli/paketo-builder:latest
     
