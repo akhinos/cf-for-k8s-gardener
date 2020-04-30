@@ -1,5 +1,7 @@
 
-c = chart("../")
+load("@ytt:yaml", "yaml")
+
+c = chart("../", default_identity_provider="myProvider")
 
 def setup():
     k8s.apply({
@@ -27,8 +29,14 @@ def test_ingress():
     ingress = k8s.get("service","istio-ingressgateway",namespace="istio-system")
     assert.eq(ingress.metadata.annotations['dns.gardener.cloud/dnsnames'],"cf.local,*.cf.local,*.authentication.cf.local,*.xsuaa-api.cf.local,*.cpp.cf.local,*.cockpit.cf.local,operator.operationsconsole.cf.local")
 
+def test_default_identity_provider():
+    cm =  k8s.get("configmap","uaa-config",namespace="cf-system")
+    uaa_config = yaml.decode(cm.data["uaa.yml"])
+    print(uaa_config.keys())
+    assert.eq(uaa_config["login"]["defaultIdentityProvider"],"myProvider")
 
 setup()
 test_kpack()
 test_ingress()
+test_default_identity_provider()
 tear_down()
