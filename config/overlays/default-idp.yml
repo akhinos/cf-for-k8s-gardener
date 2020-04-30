@@ -1,0 +1,21 @@
+{{ if .Values.default_identity_provider }}
+#@ load("@ytt:yaml", "yaml")
+#@ load("@ytt:overlay", "overlay")
+
+#@ def decode_and_replace(old, new):
+#@   return yaml.encode(overlay.apply(yaml.decode(old), replace_uaa_config()))
+#@ end
+
+#@overlay/match by=overlay.subset({"kind":"ConfigMap", "metadata":{ "name":"uaa-config"}})
+---
+data:
+  #@overlay/replace via=decode_and_replace
+  uaa.yml:
+
+#@ def replace_uaa_config():
+#@overlay/match
+login:
+  #@overlay/match missing_ok=True
+  defaultIdentityProvider: {{ .Values.default_identity_provider }}
+#@ end
+{{- end }}
