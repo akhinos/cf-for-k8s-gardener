@@ -1,7 +1,7 @@
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 
-#@ dnsnames = []
+#@ dnsnames = [ "*.uaa." + data.values.system_domain, "*.login." + data.values.system_domain]
 {{- range $sub_domain := .Values.sub_domains }}
 #@ dnsnames.append("{{ $sub_domain }}" + data.values.system_domain)
 {{- end }}
