@@ -12,7 +12,7 @@ metadata:
   #@overlay/merge
   #@overlay/match missing_ok=True
   annotations:
-    cert.gardener.cloud/secretname: {{ .Values.istio_ingressgateway_credential_name }}
+    cert.gardener.cloud/secretname: "{{ .Values.istio_ingressgateway_credential_name }}"
     dns.gardener.cloud/class: garden
     dns.gardener.cloud/dnsnames: #@ ",".join(dnsnames)
     dns.gardener.cloud/ttl: "600"
@@ -23,7 +23,7 @@ spec:
   servers:
     #@overlay/match by=overlay.subset({"tls": {"credentialName": "istio-ingressgateway-certs"}})
     - tls:
-        credentialName: {{ .Values.istio_ingressgateway_credential_name }}
+        credentialName: "{{ .Values.istio_ingressgateway_credential_name }}"
 
 #@overlay/match by=overlay.subset({"kind":"Secret", "metadata":{"name":"istio-ingressgateway-certs"}})
 #@overlay/remove

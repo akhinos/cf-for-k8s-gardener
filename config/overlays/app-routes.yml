@@ -1,34 +1,14 @@
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 
-#@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingress", "namespace" : "cf-workloads"}}), overlay.subset({"kind": "Gateway"}))
----
-spec:
-  servers:
-  #@overlay/append
-  - hosts:
-    {{- range $app_domain := .Values.cf4k8s.app_domains }}
-    - "*.{{ $app_domain }}"
-    {{- end }}
-    port:
-      name: https-apps-example-com
-      number: 443
-      protocol: HTTPS
-    tls:
-      credentialName: {{ .Values.istio_ingressgateway_credential_name }}
-      mode: SIMPLE
-
 #@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingressgateway", "namespace" : "cf-system"}}), overlay.subset({"kind": "Gateway"}))
 ---
 spec:
-  #@ hosts = []
-  #@ for service in ["api", "uaa" , "login" , "log-cache"]:
-  #@   hosts.append(service + "." + data.values.system_domain)
-  #@ end
-  #@overlay/match missing_ok=True 
   servers:
-    #@overlay/match by=overlay.all,expects="0+" 
-    - #@overlay/match by=overlay.all,expects="0+" 
-      #@overlay/match missing_ok=True 
-      #@overlay/replace
-      hosts: #@ hosts
+  #@overlay/match by=overlay.subset({"tls": {"credentialName": "istio-ingressgateway-certs"}})
+  - hosts:
+    {{- range $app_domain := .Values.cf4k8s.app_domains }}
+    #@overlay/append
+    - "*.{{ $app_domain }}"
+    {{- end }}
+
