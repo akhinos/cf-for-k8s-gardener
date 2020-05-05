@@ -91,3 +91,7 @@ Tests can be run with
 ```bash
 shalm test test/*.star
 ```
+
+## Cloud controller patch
+
+See [README](fixes/README.md)

@@ -1,0 +1,63 @@
+From b6dcd5fc9c3a46b33a7bbd0386cee89bf44edb3c Mon Sep 17 00:00:00 2001
+From: Ulrich Kramer <u.kramer@sap.com>
+Date: Tue, 28 Apr 2020 07:21:48 +0200
+Subject: [PATCH] Add environment variables to kpack image CR
+
+Remove select of variables starting with BP
+
+Filter out VCAP_SERVICES from environment variables
+
+Special handling for VCAP_SERVICES
+---
+ lib/cloud_controller/kpack/stager.rb                | 11 +++++++++++
+ spec/unit/lib/cloud_controller/kpack/stager_spec.rb |  5 ++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/lib/cloud_controller/kpack/stager.rb b/lib/cloud_controller/kpack/stager.rb
+index 77b158046..907dfd2ab 100644
+--- a/lib/cloud_controller/kpack/stager.rb
++++ b/lib/cloud_controller/kpack/stager.rb
+@@ -75,6 +75,17 @@ module Kpack
+             blob: {
+               url: blobstore_url_generator.package_download_url(staging_details.package),
+             }
++          },
++          build: {
++            env: staging_details.environment_variables.to_a.
++                  map do |key, value|
++                    if key == 'VCAP_SERVICES'
++                      value = JSON.generate(value) if value.is_a?(Hash)
++                      key = 'CNB_SERVICES'
++                    end
++                    [key, value]
++                  end.
++                  map { |key, value| { name: key, value: value.to_s } }
+           }
+         }
+       })
+diff --git a/spec/unit/lib/cloud_controller/kpack/stager_spec.rb b/spec/unit/lib/cloud_controller/kpack/stager_spec.rb
+index ef565d036..db1534b30 100644
+--- a/spec/unit/lib/cloud_controller/kpack/stager_spec.rb
++++ b/spec/unit/lib/cloud_controller/kpack/stager_spec.rb
+@@ -11,7 +11,7 @@ module Kpack
+     )
+     }
+     let(:package) { VCAP::CloudController::PackageModel.make }
+-    let(:environment_variables) { { 'nightshade_vegetable' => 'potato' } }
++    let(:environment_variables) { { 'BP_JAVA_VERSION' => '8.*', 'BPL_HEAD_ROOM' => 0, 'VCAP_SERVICES' => { postgres: [{ name: 'db1' }] } } }
+     let(:staging_memory_in_mb) { 1024 }
+     let(:staging_disk_in_mb) { 1024 }
+     let(:blobstore_url_generator) do
+@@ -77,6 +77,9 @@ module Kpack
+               blob: {
+                 url: 'package-download-url',
+               }
++            },
++            build: {
++              env: [{ name: 'BP_JAVA_VERSION', value: '8.*' }, { name: 'BPL_HEAD_ROOM', value: '0' }, { name: 'CNB_SERVICES', value: '{"postgres":[{"name":"db1"}]}' }]
+             }
+           }
+         }))
+-- 
+2.25.1
+

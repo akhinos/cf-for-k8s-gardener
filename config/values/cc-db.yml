@@ -1,6 +1,9 @@
-{{- if .Values.cc_db }}
 #@data/values
 ---
+images:
+  capi: gcr.io/peripli/cloud-controller-ng:latest
+
+{{- if .Values.cc_db }}
 capi:
   database:
     adapter: {{ .Values.cc_db_values.adapter }}
