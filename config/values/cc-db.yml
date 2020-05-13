@@ -1,7 +1,7 @@
 #@data/values
 ---
 images:
-  capi: gcr.io/peripli/cloud-controller-ng:latest
+  capi: gcr.io/peripli/cloud-controller-ng:5283da84299d3eab96326fd0ee3d6edd40ec200d2a40f80cb1c92cb5ba070b51
 
 {{- if .Values.cc_db }}
 capi:
