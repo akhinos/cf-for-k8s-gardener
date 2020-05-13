@@ -1,6 +1,6 @@
 # Fix for Cloud Controller
 
-This directory is used to [add environment variables to kpack image](https://github.com/cloudfoundry/cloud_controller_ng/pull/1600). Additionally the `VCAP_SERVICES` variabble is renamed to `CNB_SERVICES`.
+This directory is used to rename the `VCAP_SERVICES` variable to `CNB_SERVICES`.
 
 The patch file `0001-Add-environment-variables-to-kpack-image-CR.patch` is create with
 
