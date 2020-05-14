@@ -8,5 +8,4 @@ The patch file `0001-Add-environment-variables-to-kpack-image-CR.patch` is creat
 git clone git@github.com:akhinos/cloud_controller_ng.git
 cd cloud_controller_ng
 git format-patch -M cnb_services^..cnb_services
-git format-patch -M ignore-buildpack-update^..ignore-buildpack-update
 ```
