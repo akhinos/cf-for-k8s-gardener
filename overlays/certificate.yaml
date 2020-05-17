@@ -1,4 +1,4 @@
-{{ if .Values.certificate }}
+#@ if self.certificate:
 ---
 apiVersion: kapp.k14s.io/v1alpha1
 kind: Config
@@ -10,7 +10,7 @@ rebaseRules:
   - kindNamespaceNameMatcher:
       kind: Secret
       namespace: istio-system
-      name: {{ .Values.istio_ingressgateway_credential_name }}
+      name: #@ self.istio_ingressgateway_credential_name
 - path: [metadata, labels, cert.gardener.cloud/certificate-hash]
   type: copy
   sources: [existing, new]
@@ -18,7 +18,7 @@ rebaseRules:
   - kindNamespaceNameMatcher:
       kind: Secret
       namespace: istio-system
-      name: {{ .Values.istio_ingressgateway_credential_name }}
+      name: #@ self.istio_ingressgateway_credential_name
 ---
 apiVersion: v1
 data:
@@ -29,8 +29,8 @@ kind: Secret
 metadata:
   labels:
     cert.gardener.cloud/certificate: "true"
-    cert.gardener.cloud/certificate-hash: {{ index .Values.certificate "certificate-hash"}}
-  name: {{ .Values.istio_ingressgateway_credential_name }}
+    cert.gardener.cloud/certificate-hash: #@ self.certificate["certificate-hash"]
+  name: #@ self.istio_ingressgateway_credential_name
   namespace: istio-system
 type: Opaque
-{{ end }}
+#@ end

@@ -1,0 +1,15 @@
+#@data/values
+---
+images:
+  capi: gcr.io/peripli/cloud-controller-ng:5283da84299d3eab96326fd0ee3d6edd40ec200d2a40f80cb1c92cb5ba070b51
+  
+#@ if self.cc_db:
+capi:
+  database:
+    adapter: #@ self.cc_db_values.adapter
+    host: #@ self.cc_db_values.host
+    port: #@ self.cc_db_values.port
+    user: #@ self.cc_db_values.user
+    password: #@ self.cc_db_values.password
+    name: #@ self.cc_db_values.database
+#@ end

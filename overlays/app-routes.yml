@@ -1,5 +1,9 @@
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
+#@ app_domains = self.cf4k8s.app_domains
+#@ if not app_domains:
+#@   app_domains = [ self.cf4k8s.domain ]
+#@ end
 
 #@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingressgateway", "namespace" : "cf-system"}}), overlay.subset({"kind": "Gateway"}))
 ---
@@ -7,8 +11,8 @@ spec:
   servers:
   #@overlay/match by=overlay.subset({"tls": {"credentialName": "istio-ingressgateway-certs"}})
   - hosts:
-    {{- range $app_domain := .Values.cf4k8s.app_domains }}
+    #@ for domain in app_domains:
     #@overlay/append
-    - "*.{{ $app_domain }}"
-    {{- end }}
+    - #@ domain
+    #@ end
 
