@@ -22,9 +22,9 @@ rebaseRules:
 ---
 apiVersion: v1
 data:
-  ca.crt: {{ index .Values.certificate "ca.crt"}}
-  tls.crt: {{ index .Values.certificate "tls.crt"}}
-  tls.key: {{ index .Values.certificate "tls.key"}}
+  ca.crt: #@ self.certificate["ca.crt"]
+  tls.crt: #@ self.certificate["tls.crt"]
+  tls.key: #@ self.certificate["tls.key"]
 kind: Secret
 metadata:
   labels:
