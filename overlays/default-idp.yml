@@ -1,4 +1,4 @@
-{{ if .Values.default_identity_provider }}
+#@ if self.default_identity_provider:
 #@ load("@ytt:yaml", "yaml")
 #@ load("@ytt:overlay", "overlay")
 
@@ -16,6 +16,6 @@ data:
 #@overlay/match
 login:
   #@overlay/match missing_ok=True
-  defaultIdentityProvider: "{{ .Values.default_identity_provider }}"
+  defaultIdentityProvider: #@ self.default_identity_provider
 #@ end
-{{- end }}
+#@ end

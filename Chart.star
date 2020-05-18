@@ -14,7 +14,7 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
   self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
   self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",
     domain=domain,
-    ytt_files=self._overlays,  # must be lazy
+    overlays=[inject("overlays",self=self)],
     namespace="cf-system",
     docker_registry=docker_registry)
   self.cc_db = None
@@ -41,9 +41,6 @@ def _set_domain(self,k8s):
   if not self.cf4k8s.domain:
     self.cf4k8s.domain = "cf." + k8s.host.partition('.')[2]
   self.cf4k8s.app_domains= [ self.cf4k8s.domain ]
-
-def _overlays(self):
-  return [ self.helm("config/values"), self.helm("config/overlays") ]
 
 def apply(self,k8s):
   if self.cc_db:
