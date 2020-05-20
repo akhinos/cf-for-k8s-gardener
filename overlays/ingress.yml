@@ -17,7 +17,7 @@ metadata:
     dns.gardener.cloud/dnsnames: #@ ",".join(dnsnames)
     dns.gardener.cloud/ttl: "600"
 
-#@overlay/match by=overlay.subset({"kind":"Gateway", "metadata":{"name":"istio-ingressgateway"}})
+#@overlay/match by=overlay.subset({"kind":"Gateway", "metadata":{"namespace": "cf-system", "name":"istio-ingressgateway"}})
 ---
 spec:
   servers:
