@@ -17,6 +17,7 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
     overlays=[inject("overlays",self=self)],
     namespace="cf-system",
     docker_registry=docker_registry)
+
   self.database = None
   if db_chart_url:
     self.database = chart(db_chart_url, namespace="c21s-db",ca=self.cf4k8s.ca)
