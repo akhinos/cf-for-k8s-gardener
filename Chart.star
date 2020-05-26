@@ -19,7 +19,7 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
     docker_registry=docker_registry)
   self.database = None
   if db_chart_url:
-    self.database = chart(db_chart_url, namespace="c21s-db")
+    self.database = chart(db_chart_url, namespace="c21s-db",ca=self.cf4k8s.ca)
     self.database.create_database("capi")
     self.database.create_database("uaa")
 
