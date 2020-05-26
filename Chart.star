@@ -17,15 +17,11 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
     overlays=[inject("overlays",self=self)],
     namespace="cf-system",
     docker_registry=docker_registry)
-  self.cc_db = None
+  self.database = None
   if db_chart_url:
-    self.cc_db = chart(db_chart_url, namespace="c21s-db")
-    self.cc_db_values = {}
-    self.cc_db_values.adapter = self.cc_db.get_db_type()
-    self.cc_db_values.port = self.cc_db.get_port()
-    self.cc_db_values.host = self.cc_db.get_service()
-    self.cc_db_values.user = self.cc_db.get_user()
-    self.cc_db_values.database = self.cc_db.get_database()
+    self.database = chart(db_chart_url, namespace="c21s-db")
+    self.database.create_database("capi")
+    self.database.create_database("uaa")
 
 
 def domain(self):
@@ -43,9 +39,10 @@ def _set_domain(self,k8s):
   self.cf4k8s.app_domains= [ self.cf4k8s.domain ]
 
 def apply(self,k8s):
-  if self.cc_db:
-    self.cc_db.apply(k8s)
-    self.cc_db_values.password = self.cc_db.get_password(k8s)
+  if self.database:
+    self.database.apply(k8s)
+    self.capi_db_credentials = self.database.credentials("capi",k8s)
+    self.uaa_db_credentials = self.database.credentials("uaa",k8s)
 
   self._set_domain(k8s)
   self.cf4k8s.apply(k8s)
@@ -66,5 +63,5 @@ def delete(self,k8s):
   self._set_domain(k8s)
   self.__delete(k8s)
   self.cf4k8s.delete(k8s)
-  if self.cc_db:
-    self.cc_db.delete(k8s)
+  if self.database:
+    self.database.delete(k8s)
