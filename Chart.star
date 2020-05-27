@@ -24,7 +24,6 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
     self.database.create_database("capi")
     self.database.create_database("uaa")
 
-
 def domain(self):
   return self.cf4k8s.domain
 
