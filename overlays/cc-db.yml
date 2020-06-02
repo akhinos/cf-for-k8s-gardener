@@ -1,7 +1,7 @@
 #@data/values
 ---
 images:
-  capi: gcr.io/peripli/cloud-controller-ng@sha256:f9cc551cc6998dfa531426e61a53a8bb085de95a31c3dd51ddb6f52c40c7d227
+  capi: gcr.io/peripli/cloud-controller-ng@sha256:ccc83bf54437be3559c1e0fd433aa5f2ce0fb6eef5b11db46f5cc2f070f56b74
   
 #@ if hasattr(self,"capi_db_credentials"):
 capi:
