@@ -9,7 +9,7 @@
 ---
 spec:
   servers:
-  #@overlay/match by=overlay.subset({"tls": {"credentialName": "istio-ingressgateway-certs"}})
+  #@overlay/match by=overlay.subset({"tls": {"credentialName": "cf-system-cert"}})
   - hosts:
     #@ for domain in app_domains:
     #@overlay/append
