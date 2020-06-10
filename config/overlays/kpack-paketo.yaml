@@ -5,4 +5,4 @@
 spec:
   #@overlay/replace
   #@overlay/match missing_ok=True
-  image: gcr.io/peripli/paketo-builder@sha256:8941220e51ebcd62b777be07c1a3273ae187d4312b7fa828dd8615c18f07b7c7
+  image: gcr.io/peripli/paketo-builder@sha256:c8478fce02d33a9fe847daf68ec253e9647f88b66edac8b5bf40b57ec39d7b32
