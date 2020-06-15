@@ -1,4 +1,5 @@
 #@ if self.certificate:
+#@ load("@ytt:overlay", "overlay")
 ---
 apiVersion: kapp.k14s.io/v1alpha1
 kind: Config
@@ -33,4 +34,11 @@ metadata:
   name: #@ self.istio_ingressgateway_credential_name
   namespace: istio-system
 type: Opaque
+---
+#@overlay/match by=overlay.subset({"kind":"Secret", "metadata":{"namespace": "istio-system", "name": self.istio_ingressgateway_credential_name}})
+---
+metadata:
+  annotations:
+    #@overlay/remove
+    kapp.k14s.io/versioned: ""
 #@ end
