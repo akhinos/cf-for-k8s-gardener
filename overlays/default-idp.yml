@@ -1,5 +1,5 @@
 #@ load("@ytt:data", "data")
-#@ if data.values.gardenerdefault_identity_provider:
+#@ if hasattr(data.values.gardener, "default_identity_provider"):
 #@ load("@ytt:yaml", "yaml")
 #@ load("@ytt:overlay", "overlay")
 
