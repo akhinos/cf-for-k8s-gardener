@@ -2,7 +2,7 @@
 #@ load("@ytt:overlay", "overlay")
 
 #@ dnsnames = [ "*.uaa." + data.values.system_domain, "*.login." + data.values.system_domain]
-#@ for sub_domain in  self.sub_domains:
+#@ for sub_domain in  data.values.gardener.sub_domains:
 #@   dnsnames.append(sub_domain + data.values.system_domain)
 #@ end
 
@@ -12,7 +12,7 @@ metadata:
   #@overlay/merge
   #@overlay/match missing_ok=True
   annotations:
-    cert.gardener.cloud/secretname: #@ self.istio_ingressgateway_credential_name
+    cert.gardener.cloud/secretname: #@ data.values.gardener.istio_ingressgateway_credential_name
     dns.gardener.cloud/class: garden
     dns.gardener.cloud/dnsnames: #@ ",".join(dnsnames)
     dns.gardener.cloud/ttl: "600"
@@ -23,7 +23,7 @@ spec:
   servers:
     #@overlay/match by=overlay.subset({"tls": {"credentialName": "istio-ingressgateway-certs"}})
     - tls:
-        credentialName: #@ self.istio_ingressgateway_credential_name
+        credentialName: #@ data.values.gardener.istio_ingressgateway_credential_name
 
 #@overlay/match by=overlay.subset({"kind":"Secret", "metadata":{"name":"istio-ingressgateway-certs"}})
 #@overlay/remove

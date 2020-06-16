@@ -2,24 +2,3 @@
 ---
 images:
   capi: gcr.io/peripli/cloud-controller-ng@sha256:f9403da99f3690e37a3d27fba70db069f007891120a867baad7f83e7ae72da55
-  
-#@ if hasattr(self,"capi_db_credentials"):
-capi:
-  database:
-    adapter: postgres
-    host: #@ self.capi_db_credentials.host
-    port: #@ self.capi_db_credentials.port
-    user: #@ self.capi_db_credentials.user
-    password: #@ self.capi_db_credentials.password
-    name: #@ self.capi_db_credentials.database
-#@ end
-#@ if hasattr(self,"uaa_db_credentials"):
-uaa:
-  database:
-    adapter: postgresql
-    host: #@ self.uaa_db_credentials.host
-    port: #@ self.uaa_db_credentials.port
-    user: #@ self.uaa_db_credentials.user
-    password: #@ self.uaa_db_credentials.password
-    name: #@ self.uaa_db_credentials.database
-#@ end
