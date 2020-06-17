@@ -1,6 +1,8 @@
 #@ load("@ytt:data", "data")
 #@ if data.values.gardener.certificate:
+#@ load("@ytt:struct", "struct")
 #@ load("@ytt:overlay", "overlay")
+#@ certificate = struct.decode(data.values.gardener.certificate)
 ---
 apiVersion: kapp.k14s.io/v1alpha1
 kind: Config
@@ -24,14 +26,14 @@ rebaseRules:
 ---
 apiVersion: v1
 data:
-  ca.crt: #@ data.values.gardener.certificate["ca.crt"]
-  tls.crt: #@ data.values.gardener.certificate["tls.crt"]
-  tls.key: #@ data.values.gardener.certificate["tls.key"]
+  ca.crt: #@ certificate["ca.crt"]
+  tls.crt: #@ certificate["tls.crt"]
+  tls.key: #@ certificate["tls.key"]
 kind: Secret
 metadata:
   labels:
     cert.gardener.cloud/certificate: "true"
-    cert.gardener.cloud/certificate-hash: #@ data.values.gardener.certificate["certificate-hash"]
+    cert.gardener.cloud/certificate-hash: #@ certificate["certificate-hash"]
   name: #@ data.values.gardener.istio_ingressgateway_credential_name
   namespace: istio-system
 type: Opaque
