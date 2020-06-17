@@ -1,4 +1,4 @@
-def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
+def init(self,domain=None, docker_registry=None, readonly_docker_registry=None, 
          sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ],
          certificate = None,
          db_chart_url = None,
@@ -12,7 +12,7 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
   self.default_identity_provider = default_identity_provider
   self.readonly_docker_registry = readonly_docker_registry
   self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
-  self.cf4k8s = chart("../cf-for-k8s",
+  self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",
     domain=domain,
     overlays=[inject("overlays",self=self)],
     namespace="cf-system",
