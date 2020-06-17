@@ -21,9 +21,9 @@ metadata:
 ---
 spec:
   servers:
-    #@overlay/match by=overlay.subset({"tls": {"credentialName": "cf-system-cert"}})
+    #@overlay/match by=overlay.subset({"tls": {"credentialName": "istio-ingressgateway-certs"}})
     - tls:
         credentialName: #@ self.istio_ingressgateway_credential_name
 
-#@overlay/match by=overlay.subset({"kind":"Secret", "metadata":{"name":"cf-system-cert"}})
+#@overlay/match by=overlay.subset({"kind":"Secret", "metadata":{"name":"istio-ingressgateway-certs"}})
 #@overlay/remove
