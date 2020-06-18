@@ -1,0 +1,11 @@
+#@ load("@ytt:data","data")
+#@ load("@ytt:base64","base64")
+#@ load("@ytt:yaml", "yaml")
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cf-values
+data:
+  cf-values.yaml: #@ base64.encode("#@data/values\n---\n" + yaml.encode(data.values).replace("app_domains:","#@overlay/replace\napp_domains:"))
