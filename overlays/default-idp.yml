@@ -1,4 +1,6 @@
-#@ if self.default_identity_provider:
+#@ load("@ytt:data", "data")
+
+#@ if data.values.gardener.default_identity_provider:
 #@ load("@ytt:yaml", "yaml")
 #@ load("@ytt:overlay", "overlay")
 
@@ -16,6 +18,6 @@ data:
 #@overlay/match
 login:
   #@overlay/match missing_ok=True
-  defaultIdentityProvider: #@ self.default_identity_provider
+  defaultIdentityProvider: #@ data.values.gardener.default_identity_provider
 #@ end
 #@ end

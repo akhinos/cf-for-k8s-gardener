@@ -11,10 +11,9 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
   self.certificate = certificate
   self.default_identity_provider = default_identity_provider
   self.readonly_docker_registry = readonly_docker_registry
-  self.istio_ingressgateway_credential_name = "cf-4-k8s-ingressgateway-certs"
   self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",
     domain=domain,
-    overlays=[inject("overlays",self=self)],
+    overlays=[inject("overlays",self=self), inject("value-overlays",self=self)],
     namespace="cf-system",
     docker_registry=docker_registry)
 

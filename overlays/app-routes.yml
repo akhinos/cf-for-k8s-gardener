@@ -1,8 +1,8 @@
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
-#@ app_domains = self.cf4k8s.app_domains
+#@ app_domains = data.values.app_domains
 #@ if not app_domains:
-#@   app_domains = [ self.cf4k8s.domain ]
+#@   app_domains = [ data.values.domain ]
 #@ end
 
 #@overlay/match by=overlay.and_op(overlay.subset({"metadata":{"name":"istio-ingressgateway", "namespace" : "cf-system"}}), overlay.subset({"kind": "Gateway"}))

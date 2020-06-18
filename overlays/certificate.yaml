@@ -1,5 +1,9 @@
-#@ if self.certificate:
+#@ load("@ytt:data", "data")
+
+#@ if data.values.gardener.certificate:
 #@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:struct", "struct")
+#@ certificate = struct.decode(data.values.gardener.certificate)
 ---
 apiVersion: kapp.k14s.io/v1alpha1
 kind: Config
@@ -11,7 +15,7 @@ rebaseRules:
   - kindNamespaceNameMatcher:
       kind: Secret
       namespace: istio-system
-      name: #@ self.istio_ingressgateway_credential_name
+      name: #@ data.values.gardener.istio_ingressgateway_credential_name
 - path: [metadata, labels, cert.gardener.cloud/certificate-hash]
   type: copy
   sources: [existing, new]
@@ -19,19 +23,19 @@ rebaseRules:
   - kindNamespaceNameMatcher:
       kind: Secret
       namespace: istio-system
-      name: #@ self.istio_ingressgateway_credential_name
+      name: #@ data.values.gardener.istio_ingressgateway_credential_name
 ---
 apiVersion: v1
 data:
-  ca.crt: #@ self.certificate["ca.crt"]
-  tls.crt: #@ self.certificate["tls.crt"]
-  tls.key: #@ self.certificate["tls.key"]
+  ca.crt: #@ certificate["ca.crt"]
+  tls.crt: #@ certificate["tls.crt"]
+  tls.key: #@ certificate["tls.key"]
 kind: Secret
 metadata:
   labels:
     cert.gardener.cloud/certificate: "true"
-    cert.gardener.cloud/certificate-hash: #@ self.certificate["certificate-hash"]
-  name: #@ self.istio_ingressgateway_credential_name
+    cert.gardener.cloud/certificate-hash: #@ certificate["certificate-hash"]
+  name: #@ data.values.gardener.istio_ingressgateway_credential_name
   namespace: istio-system
 type: Opaque
 #@ end
