@@ -1,11 +1,14 @@
 #@ load("@ytt:data","data")
 #@ load("@ytt:base64","base64")
 #@ load("@ytt:yaml", "yaml")
-
+#@ encoded_data = yaml.encode(data.values)
+#@ encoded_data = "#@data/values\n---\n" + encoded_data
+#@ encoded_data = encoded_data.replace("app_domains:","#@overlay/replace\napp_domains:")
+#@ encoded_data = encoded_data.replace("gardener:","#@overlay/match missing_ok=True\ngardener:")
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: cf-values
 data:
-  cf-values.yaml: #@ base64.encode("#@data/values\n---\n" + yaml.encode(data.values).replace("app_domains:","#@overlay/replace\napp_domains:"))
+  cf-values.yaml: #@ base64.encode(encoded_data)
