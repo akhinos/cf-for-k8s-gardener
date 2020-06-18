@@ -1,6 +1,6 @@
 #@ load("@ytt:data", "data")
 
-#@ if data.values.gardener.certificate:
+#@ if hasattr(data.values.gardener,"certificate"):
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:struct", "struct")
 #@ certificate = struct.decode(data.values.gardener.certificate)
