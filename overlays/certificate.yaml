@@ -38,10 +38,4 @@ metadata:
   namespace: istio-system
 type: Opaque
 ---
-#@overlay/match by=overlay.subset({"kind":"Secret", "metadata":{"namespace": "istio-system", "name": data.values.gardener.istio_ingressgateway_credential_name}})
----
-metadata:
-  annotations:
-    #@overlay/remove
-    kapp.k14s.io/versioned: ""
 #@ end
