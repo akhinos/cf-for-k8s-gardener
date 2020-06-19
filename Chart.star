@@ -14,7 +14,7 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
     self.api_server_ip = "100.64.0.1"
   self.default_identity_provider = default_identity_provider
   self.readonly_docker_registry = readonly_docker_registry
-  self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",
+  self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/c4dc59c97dbb8d379551eea175d30fd3914ebaa0.zip",
     domain=domain,
     overlays=[inject("overlays",self=self), inject("value-overlays",self=self)],
     namespace="cf-system",
