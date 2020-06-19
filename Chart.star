@@ -2,13 +2,16 @@ def init(self,domain=None, docker_registry=None, readonly_docker_registry=None,
          sub_domains = [ "", "*.","*.authentication.","*.xsuaa-api.","*.cpp.","*.cockpit.","operator.operationsconsole." ],
          certificate = None,
          db_chart_url = None,
-         default_identity_provider=None):
+         default_identity_provider=None, api_server_ip=None):
   self.__class__.name = "cf-for-k8s-gardener"
 
   if not readonly_docker_registry:
     readonly_docker_registry = docker_registry
   self.sub_domains = sub_domains
   self.certificate = certificate
+  self.api_server_ip = api_server_ip
+  if self.api_server_ip == None:
+    self.api_server_ip = "100.64.0.1"
   self.default_identity_provider = default_identity_provider
   self.readonly_docker_registry = readonly_docker_registry
   self.cf4k8s = chart("https://github.com/akhinos/cf-for-k8s/archive/shalm.zip",
@@ -41,6 +44,8 @@ def _set_domain(self,k8s):
   self.cf4k8s.app_domains= [ self.cf4k8s.domain ]
 
 def apply(self,k8s):
+  k8s_service = k8s.get("service","kubernetes",namespace="default")
+  self.api_server_ip = k8s_service.spec.clusterIP
   if self.database:
     self.database.apply(k8s)
     self.capi_db_credentials = self.database.credentials("capi",k8s)
@@ -49,17 +54,6 @@ def apply(self,k8s):
   self._set_domain(k8s)
   self.cf4k8s.apply(k8s)
   self.__apply(k8s)
-  self.fix_kpack_watcher(k8s)
-
-def fix_kpack_watcher(self,k8s):
-  k8s.tool = "kubectl"
-  k8s_service = k8s.get("service","kubernetes",namespace="default")
-  kpack_watcher = k8s.get("deployments.apps","cf-api-kpack-watcher",namespace="cf-system")
-  if not kpack_watcher.spec.template.metadata.get('annotations',None):
-    kpack_watcher.spec.template.metadata.annotations = {}
-  kpack_watcher.spec.template.metadata.annotations['traffic.sidecar.istio.io/excludeOutboundIPRanges'] = k8s_service.spec.clusterIP + '/32'
-  k8s.tool = "kubectl"
-  k8s.apply(kpack_watcher,namespace="cf-system")
 
 def delete(self,k8s):
   self._set_domain(k8s)

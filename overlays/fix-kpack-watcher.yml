@@ -1,0 +1,12 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.subset({"kind":"Deployment", "metadata":{"namespace": "cf-system", "name":"cf-api-kpack-watcher"}})
+---
+spec:
+  template:
+    metadata:
+      #@overlay/merge
+      #@overlay/match missing_ok=True
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundIPRanges: #@ data.values.gardener.apiServerIP + '/32'

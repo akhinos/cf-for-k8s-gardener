@@ -11,3 +11,4 @@ gardener:
     tls.crt: #@ self.certificate["tls.crt"]
     tls.key: #@ self.certificate["tls.key"]
     certificate-hash: #@ self.certificate["certificate-hash"]
+  apiServerIP: #@ self.api_server_ip
