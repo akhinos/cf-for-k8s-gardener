@@ -23,6 +23,8 @@ log_cache_gateway: #@ data.values.log_cache_gateway
 log_cache_syslog: #@ data.values.log_cache_syslog
 metric_proxy: #@ data.values.metric_proxy
 uaa: #@ data.values.uaa
+images:
+    capi: #@ data.values.images.capi
 #@ if data.values.app_registry:
 app_registry: #@ data.values.app_registry
 #@ end
