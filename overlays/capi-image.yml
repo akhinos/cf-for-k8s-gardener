@@ -1,0 +1,5 @@
+#@data/values
+---
+#@overlay/match missing_ok=True
+images:
+  capi: gcr.io/peripli/cloud-controller-ng@sha256:3f745958647cfa825137390c594f78dea045d487a15de161c8c68bdf7973ade5

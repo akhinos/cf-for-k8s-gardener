@@ -2,7 +2,7 @@
 apiVersion: vendir.k14s.io/v1alpha1
 kind: Config
 directories:
-- path: ytt-templates/_ytt_lib
+- path: overlays/_ytt_lib
   contents:
   - path: github.com/cloudfoundry/cf-for-k8s
     git:
