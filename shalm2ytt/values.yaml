@@ -1,0 +1,104 @@
+#@ load("@ytt:base64","base64")
+#@ app_domains = self.app_domains
+#@ if not app_domains:
+#@   app_domains = [ self.domain ]
+#@ end
+#@data/values
+---
+system_domain: #@ self.domain
+#@overlay/replace
+app_domains: #@ app_domains
+
+cf_admin_password: #@ self.cf_admin_password.password
+
+cf_blobstore:
+  secret_key: #@ self.secret_key.password
+
+cf_db:
+  admin_password: #@ self.cf_db_admin_password.password
+
+capi:
+  database:
+    password: #@ self.capi_database_password.password
+
+system_certificate:
+  #! This certificates and keys are base64 encoded and should be valid for *.system.cf.example.com
+  crt: #@ base64.encode(self.system_certificate.certificate )
+  key: #@ base64.encode(self.system_certificate.private_key )
+  ca: #@ base64.encode(self.system_certificate.ca )
+
+workloads_certificate:
+  #! Base64-encoded certificate for the wildcard
+  #! subdomain of the system domain (e.g., CN=*.apps.cf.example.com)
+  crt: #@ base64.encode(self.workloads_certificate.certificate )
+  key: #@ base64.encode(self.workloads_certificate.private_key )
+  ca: #@ base64.encode(self.workloads_certificate.ca )
+
+internal_certificate:
+  #! Base64-encoded certificate for the wildcard
+  #! subdomain of the system domain (e.g., CN=*.cf-system.svc.cluster.local)
+  crt: #@ base64.encode(self.internal_certificate.certificate )
+  key: #@ base64.encode(self.internal_certificate.private_key )
+  ca: #@ base64.encode(self.internal_certificate.ca )
+  
+log_cache_ca:
+  crt: #@ base64.encode(self.log_cache_ca.certificate )
+  key: #@ base64.encode(self.log_cache_ca.private_key )
+
+log_cache:
+  crt: #@ base64.encode(self.log_cache.certificate )
+  key: #@ base64.encode(self.log_cache.private_key )
+
+log_cache_metrics:
+  crt: #@ base64.encode(self.log_cache_metrics.certificate )
+  key: #@ base64.encode(self.log_cache_metrics.private_key )
+
+log_cache_gateway:
+  crt: #@ base64.encode(self.log_cache_gateway.certificate )
+  key: #@ base64.encode(self.log_cache_gateway.private_key )
+
+log_cache_syslog:
+  crt: #@ base64.encode(self.log_cache_syslog.certificate )
+  key: #@ base64.encode(self.log_cache_syslog.private_key )
+
+metric_proxy:
+  ca:
+    crt: #@ base64.encode(self.metric_proxy_ca.certificate ) 
+    key: #@ base64.encode(self.metric_proxy_ca.private_key ) 
+  cert:
+    crt: #@ base64.encode(self.metric_proxy.certificate ) 
+    key: #@ base64.encode(self.metric_proxy.private_key ) 
+  
+uaa:
+  database:
+    password: #@ self.uaa_db_password.password
+  admin_client_secret: #@ self.uaa_admin_client_secret.password
+  jwt_policy:
+    signing_key: #@ self.uaa_jwt_policy_signing_key.private_key
+  encryption_key:
+    passphrase: #@ self.uaa_encryption_key_passphrase.password
+  login:
+    service_provider:
+      key: #@ self.uaa_login_service_provider.private_key
+      certificate: #@ self.uaa_login_service_provider.certificate
+
+#@ if self.docker_registry:
+app_registry:
+  hostname: #@ self.docker_registry.repository.partition("/")[0]
+  repository: #@ self.docker_registry.repository
+  username: #@ self.docker_registry.username
+  password: #@ self.docker_registry.password
+#@ end
+
+#@overlay/match missing_ok=True
+gardener:
+  sub_domains: #@ self.sub_domains
+  istio_ingressgateway_credential_name: "cf-4-k8s-ingressgateway-certs"
+  default_identity_provider: #@ self.default_identity_provider
+  #@ if/end self.certificate:
+  certificate:
+    ca.crt: #@ self.certificate["ca.crt"]
+    tls.crt: #@ self.certificate["tls.crt"]
+    tls.key: #@ self.certificate["tls.key"]
+    certificate-hash: #@ self.certificate["certificate-hash"]
+  apiServerIP: #@ self.api_server_ip

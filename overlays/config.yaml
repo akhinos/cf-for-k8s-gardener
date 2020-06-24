@@ -1,0 +1,32 @@
+#@ load("@ytt:library", "library")
+#@ load("@ytt:template", "template")
+#@ load("@ytt:data", "data")
+
+#! This function is required to map a dict to a yamlfragment. 
+#! This is only needed for the overlay/replace annotation for app_domains
+
+#@ def values():
+system_domain: #@ data.values.system_domain
+#@overlay/replace
+app_domains: #@ data.values.app_domains
+cf_admin_password: #@ data.values.cf_admin_password
+cf_blobstore: #@ data.values.cf_blobstore
+cf_db: #@ data.values.cf_db
+capi: #@ data.values.capi
+system_certificate: #@ data.values.system_certificate
+workloads_certificate: #@ data.values.workloads_certificate
+internal_certificate: #@ data.values.internal_certificate
+log_cache_ca: #@ data.values.log_cache_ca
+log_cache: #@ data.values.log_cache
+log_cache_metrics: #@ data.values.log_cache_metrics
+log_cache_gateway: #@ data.values.log_cache_gateway
+log_cache_syslog: #@ data.values.log_cache_syslog
+metric_proxy: #@ data.values.metric_proxy
+uaa: #@ data.values.uaa
+#@ if data.values.app_registry:
+app_registry: #@ data.values.app_registry
+#@ end
+
+#@ end
+#@ cf4k8s = library.get("github.com/cloudfoundry/cf-for-k8s").with_data_values(values())
+--- #@ template.replace(cf4k8s.eval())

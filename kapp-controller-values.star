@@ -27,5 +27,5 @@ def readonly_docker_registry():
         return { 'username': '_json_key', 'password': result, 'repository': 'gcr.io/sap-se-gcp-istio-dev/cf-workloads'}
     return None
 
-cf4k8s = chart(".", domain=env("CF_DOMAIN"), docker_registry=docker_registry(),readonly_docker_registry=readonly_docker_registry(),api_server_ip=api_server_ip(),certificate=certificate())
-print(cf4k8s.kapp_controller_values())
+c = chart(".", domain=env("CF_DOMAIN"), docker_registry=docker_registry(),readonly_docker_registry=readonly_docker_registry(),api_server_ip=api_server_ip(),certificate=certificate())
+print(c.kapp_controller_values())
