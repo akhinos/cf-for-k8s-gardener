@@ -10,6 +10,8 @@ def init(self,domain=default_domain, docker_registry=None, readonly_docker_regis
   self.__class__.name = "cf-for-k8s"
   self.domain = domain
   self.app_domains= None
+  if docker_registry == None:
+    fail("Require flag docker registry.")
   self.docker_registry = docker_registry
 
   self.cf_admin_password = user_credential("cf-admin-password-shalm",username="admin")

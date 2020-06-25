@@ -1,6 +1,7 @@
 #@ load("@ytt:library", "library")
 #@ load("@ytt:template", "template")
 #@ load("@ytt:data", "data")
+#@ load("@ytt:assert", "assert")
 
 #! This function is required to map a dict to a yamlfragment. 
 #! This is only needed for the overlay/replace annotation for app_domains
@@ -25,9 +26,10 @@ metric_proxy: #@ data.values.metric_proxy
 uaa: #@ data.values.uaa
 images:
     capi: gcr.io/peripli/cloud-controller-ng@sha256:548a436c16cd6f0c749a98409a1dd08e6afc87c6a99b6533c62b2a1781ac10a4
-#@ if data.values.app_registry:
-app_registry: #@ data.values.app_registry
+#@ if not getattr(data.values, 'app_registry'):
+#@   assert.fail("app_registry missing. Credentials for cf application OCI-registry need to be configured.")
 #@ end
+app_registry: #@ data.values.app_registry
 
 #@ end
 #@ cf4k8s = library.get("github.com/cloudfoundry/cf-for-k8s").with_data_values(values())
