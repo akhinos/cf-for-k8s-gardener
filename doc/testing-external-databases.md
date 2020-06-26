@@ -14,10 +14,10 @@ The purpose of this document is to describe how continuous integration tests can
 |--------------------------------------------|-----------------|-----------------------|----------------|
 | Install with Local DB                      | Already exists? | Already exists        | Already exists |
 | Install with External DB (in same cluster) | Not required    | Required<sup>(1)<sup> | Out of scope   |
-| Install with External DB (outside cluster) | Not required    | Required              | Out of scope   |
+| Install with External DB (outside cluster) | Not required    | Required<sup>(1)<sup> | Out of scope   |
 | Upgrade with External DB                   | Not required    | Out of scope          | Out of scope   |
 
-(1) This test should ensure that network problems (e.g. istio egress configuration changes) are detected correctly.
+(1) It makes sense to test both variants, because internal cluster communication and internet communication could react differently to networking changes (e.g. istio egress configuration changes).
 
 As you can see in the table above, currently two tests are missing for the combination of GKE Cluster with an external database. The type of database to use is discussed in the next section.
 
