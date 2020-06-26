@@ -26,7 +26,9 @@ metric_proxy: #@ data.values.metric_proxy
 uaa: #@ data.values.uaa
 images:
     capi: gcr.io/peripli/cloud-controller-ng@sha256:c0de72dff645051fbe12307d0d144d51ee8f5787eb8eaaa658a8f20a5c2bddd9
-#@ if/end hasattr(data.values, 'app_registry'):
+#@ if not hasattr(data.values, 'app_registry'):
+#@   assert.fail("app_registry missing. Credentials for cf application OCI-registry need to be configured.")
+#@ end
 app_registry: #@ data.values.app_registry
 
 #@ end
