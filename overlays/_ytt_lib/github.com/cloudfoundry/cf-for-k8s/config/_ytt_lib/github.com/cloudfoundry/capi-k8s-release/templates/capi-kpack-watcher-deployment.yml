@@ -22,7 +22,7 @@ spec:
       labels:
         app.kubernetes.io/name: cf-api-kpack-watcher
     spec:
-      serviceAccountName: default
+      serviceAccountName: cf-api-kpack-watcher-service-account
       containers:
         - name: cf-api-kpack-watcher
           image: #@ data.values.images.capi_kpack_watcher
@@ -35,6 +35,8 @@ spec:
             value: capi_kpack_watcher
           - name: CAPI_HOST
             value: #@ "http://capi.{}.svc.cluster.local".format(data.values.system_namespace)
+          - name: STAGING_NAMESPACE
+            value: #@ data.values.staging_namespace
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

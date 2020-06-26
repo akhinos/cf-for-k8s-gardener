@@ -2,8 +2,8 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'DOC: also bump suggested resource min in docs...'
-      sha: e61ba6425502077e9daf2f78fcd2c697b76cb4e3
+      commitTitle: Bump minimum Kapp version...
+      sha: cbbb55fc592348a19270057e0b37d6bbadfe5824
     path: github.com/cloudfoundry/cf-for-k8s
   path: overlays/_ytt_lib
 kind: LockConfig
