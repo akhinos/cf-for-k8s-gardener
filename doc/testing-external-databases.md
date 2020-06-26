@@ -109,7 +109,7 @@ Adding external database tests will add an additional dimension.
 
 Therefore, it would be nice to have some support for this in Concourse. Unfortunately, Concourse doesn't support test martrices.
 
-An alternative might be to use ytt to render the pipeline. This would allow to reuse stuff for different test dimensions.
+An alternative might be to use ytt to render the pipeline. This would allow the reuse of fragments for different test dimensions.
 
 ## Component tests for capi and uaa
 
@@ -134,5 +134,5 @@ The following jobs will be added/modified in Concourse
 
 ## Open questions
 
-* Are Credentials for GCP and AWS are provided by VMWare inside Concourse?
+* Will AWS credentials be provided by VMWare inside Concourse?
 * Could ytt be used to render the pipelines? The only drawback would be that yaml references need to be replaced by ytt functions.
