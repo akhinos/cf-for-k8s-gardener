@@ -1,8 +1,0 @@
-#@ load("@ytt:overlay", "overlay")
-
-#@overlay/match by=overlay.subset({"kind":"Builder", "metadata":{"namespace": "cf-workloads-staging", "name":"cf-autodetect-builder"}})
----
-spec:
-  #@overlay/replace
-  #@overlay/match missing_ok=True
-  image: gcr.io/peripli/paketo-builder@sha256:08273ab2b89fb28a05b71bdcebe63de926c36bc4c121a51fc2f0d144b8bfd3cb
