@@ -25,7 +25,7 @@ log_cache_syslog: #@ data.values.log_cache_syslog
 metric_proxy: #@ data.values.metric_proxy
 uaa: #@ data.values.uaa
 images:
-    capi: gcr.io/peripli/cloud-controller-ng@sha256:548a436c16cd6f0c749a98409a1dd08e6afc87c6a99b6533c62b2a1781ac10a4
+    capi: gcr.io/peripli/cloud-controller-ng@sha256:c0de72dff645051fbe12307d0d144d51ee8f5787eb8eaaa658a8f20a5c2bddd9
 #@ if/end hasattr(data.values, 'app_registry'):
 app_registry: #@ data.values.app_registry
 
