@@ -9,7 +9,7 @@ spec:
   sources:
   - image: gcr.io/paketo-community/ruby@sha256:5d95274fc0468f34d29ff2fd115634206fa6beaa3d8ecb2e0d8f06b42f37a777
   - image: gcr.io/paketo-community/python@sha256:c152763e3bc606f72cb7d8c513abe2fcf6ee2d8650b1e3a2884a0b7966404300
-  - image: gcr.io/paketo-buildpacks/java@sha256:32ba0e8e7e8fee56adda85b2ff6a43bd6baa06088cf9c5b08d0a7fe5a342ae8b
+  - image: gcr.io/peripli/java:1.7.1-jdbc-3
   - image: gcr.io/paketo-buildpacks/nodejs@sha256:3234414b97541a9661ba89fe20a8fe6505f6e1ca64f27227342399e5ca86138e
   - image: gcr.io/paketo-buildpacks/go@sha256:bad4b5bae7818134cfef2609057e40b4d6bcc2406c5f7c4a85f77e9b31d1c96e
   - image: gcr.io/paketo-buildpacks/dotnet-core@sha256:52952dbaf7bd65ea10ac6491c5af8dda238bdda0c33a938806026d327c3a075f

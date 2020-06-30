@@ -20,11 +20,11 @@ Install a [gardener](https://gardener.cloud/) flavoured cf-for-k8s using shalm. 
 1. Install cf-for-k8s-gardener
 
 ```bash
-shalm apply https://github.com/akhinos/cf-for-k8s-gardener/archive/stable.zip \
+shalm apply https://github.com/akhinos/cf-for-k8s-gardener/archive/master.zip \
                    --set-yaml docker_registry=/tmp/docker-registry.yaml
 ```
 
-You can also clone the repo https://github.com/akhinos/cf-for-k8s-gardener, checkout the `stable` branch and use the following command for installation:
+You can also clone the repo https://github.com/akhinos/cf-for-k8s-gardener and use the following command for installation:
 
 ```
 shalm apply cf-for-k8s-gardener \
@@ -59,18 +59,14 @@ jq -n --arg username _json_key \
       > /tmp/docker-registry.json
 ```
 
-## Pushing application
+## Login Cloud Foundry
 
-Currently, it's not possible to push all kind of applications.
+```bash
+cf api "https://$(kubectl -n cf-system get configmaps   cloud-controller-ng-yaml-ver-1 -o json | jq -r '.data["cloud_controller_ng.yml"]' | yaml2json | jq -r '.external_domain')"
+cf auth admin "$(kubectl -n kubecf get secret  var-cf-admin-password -o json  | jq -r '.data.password' | base64 -d)"  
 
-The following applications are known to work:
+```
 
-* [node app from cf-for-k8s](https://github.com/cloudfoundry/cf-for-k8s/tree/master/tests/smoke/assets/test-node-app)
-* [go app from go-buildpack](https://github.com/cloudfoundry/go-buildpack/tree/master/fixtures/go_mod_app)
-
-The following applications are not working:
-
-* [dora from cf-acceptance-tests](https://github.com/cloudfoundry/cf-acceptance-tests/tree/master/assets/dora)
 
 ## Prevent LE rate limit
 

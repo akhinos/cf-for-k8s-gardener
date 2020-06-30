@@ -53,7 +53,7 @@ def kapp_controller_values(self):
   return str(self.ytt(inject("shalm2ytt",self=self),"kapp-controller"))
 
 def _set_domain(self,k8s):
-  if not self.domain == default_domain:
+  if self.domain == default_domain:
     self.domain = "cf." + k8s.host.partition('.')[2]
   self.app_domains= [ self.domain ]
 
