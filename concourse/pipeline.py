@@ -92,5 +92,5 @@ with Pipeline("py-cicd",image_resource={"type": "docker-image","source": {"repos
         product_sapcf_compliance = job.get("product-sapcf-compliance",trigger=False)
 
         @job.task(secrets={"gardener_kubeconfig_content": "GARDENER_KUBECONFIG_CONTENT"},timeout="30m")
-        def compliance_test():
+        def compliance_test(gardener_kubeconfig_content):
             print(product_sapcf_compliance)
