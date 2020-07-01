@@ -86,7 +86,7 @@ with Pipeline("py-cicd",image_resource={"type": "docker-image","source": {"repos
             os.environ['SMOKE_TEST_USERNAME'] = "admin"
             os.environ['SMOKE_TEST_PASSWORD'] = password
             os.environ['SMOKE_TEST_APPS_DOMAIN'] = domain
-            print("Running tests against $SMOKE_TEST_API_ENDPOINT")
+            print("Running tests against " + api_endpoint)
             shell(["go","test","-v","."],cwd=os.path.join(cf_for_k8s,"tests/smoke"))
 
         product_sapcf_compliance = job.get("product-sapcf-compliance",trigger=False)
