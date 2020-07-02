@@ -73,7 +73,7 @@ with Pipeline("py-cicd", image_resource={"type": "docker-image", "source": {"rep
         def bump_cf_for_k8s_gardener(out):
             ref = cf_for_k8s.ref()
             print("Using ref for cr-for-k8s: {}".format(ref))
-            with bump_repo(cf_for_k8s_gardener, os.path.join(out, "cf-for-k8s-gardener")):
+            with bump_repo(cf_for_k8s_gardener.directory(), os.path.join(out, "cf-for-k8s-gardener")):
                 with yaml_replace('vendir.yml') as content:
                     content['directories'][0]['contents'][0]['git']['ref'] = ref
                 shell(["vendir", "sync"])
@@ -127,7 +127,7 @@ with Pipeline("py-cicd", image_resource={"type": "docker-image", "source": {"rep
                                "certificate=/tmp/certificate.json"]
 
             os.environ['KUBECONFIG'] = kubeconfig.file()
-            shell(['shalm', 'apply', cf_for_k8s_gardener,
+            shell(['shalm', 'apply', cf_for_k8s_gardener.directory(),
                    '--set-yaml', 'docker_registry=/tmp/docker_registry.json',
                    '--set-yaml', 'readonly_docker_registry=/tmp/readonly_docker_registry.json',
                    '-n', 'cf-system'] + args)
@@ -158,7 +158,7 @@ with Pipeline("py-cicd", image_resource={"type": "docker-image", "source": {"rep
             os.environ['SMOKE_TEST_APPS_DOMAIN'] = domain
             print("Running tests against " + api_endpoint)
             shell(["go", "test", "-v", "."],
-                  cwd=os.path.join(cf_for_k8s, "tests/smoke"))
+                  cwd=os.path.join(cf_for_k8s.directory(), "tests/smoke"))
 
         product_sapcf_compliance = job.get(
             "product-sapcf-compliance", trigger=False)
@@ -167,7 +167,9 @@ with Pipeline("py-cicd", image_resource={"type": "docker-image", "source": {"rep
         def compliance_test(gardener_kubeconfig_content):
             cf_wait_for_load_balancer(api_endpoint)
             shell(["cf", "api", api_endpoint])
-            shell(["cf", "auth", "admin", Password(
-                cf_admin_password(gardener_kubeconfig_content))])
-            shell([product_sapcf_compliance +
-                   "/components/sapcf-test/scripts/smoke_tests/test_nginx_buildpack.sh", "fake-context.json"])
+            shell(["cf", "auth", "admin", 
+                Password(cf_admin_password(gardener_kubeconfig_content))])
+            with open("/tmp/fake-context.json","w") as f:
+                f.write("{}")
+            shell([product_sapcf_compliance.directory() + "/components/sapcf-test/scripts/smoke_tests/test_nginx_buildpack.sh", 
+                "/tmp/fake-context.json"])
