@@ -10,6 +10,7 @@ import yaml
 import requests
 import time
 from cron import Cron
+from contextlib import contextmanager
 
 def shoot_kubeconfig(name):
     return ShootManager().get(name).kubeconfig()
@@ -17,6 +18,37 @@ def shoot_kubeconfig(name):
 def write_json(filename,data):
     with open(filename,'w') as f:
         f.write(json.dumps(data))
+
+@contextmanager
+def yaml_replace(file):
+    content = {}
+    with open(file,'r') as f:
+        content = yaml.full_load(f)
+    yield content
+    with open(file,'w') as f:
+        f.write(yaml.dump(content))
+
+@contextmanager
+def bump_repo(source,target):
+    shell(["rm", "-rf", target])
+    shell(["cp", "-a", source, target])
+    dir = os.getcwd()
+    try:
+        os.chdir(target)
+        shell(["git", "config", "user.name", "istio-serviceuser"])
+        shell(["git", "config", "user.email", "istio@sap.com"])
+        shell(["git", "reset", "--hard","HEAD"])
+        shell(["git", "checkout", "master"])
+        shell(["git", "pull"])
+        yield
+        try:
+            shell(["git", "diff", "--cached", "--exit-code"])
+            shell(["git", "commit", "-a", "-m", "Automatic bump"])
+        except:
+            pass
+    finally:
+        os.chdir(dir)
+
 
 with Pipeline("py-cicd",image_resource={"type": "docker-image","source": {"repository": "gcr.io/sap-se-gcp-istio-dev/ci-image","tag": "latest", "username" : "_json_key","password":"((IMAGE_PULL_SECRETS))"}}) as pipeline:
     pipeline.path_append(os.getenv("HOME") + "/workspace/c21s/bin")
@@ -27,11 +59,30 @@ with Pipeline("py-cicd",image_resource={"type": "docker-image","source": {"repos
     pipeline.resource("product-sapcf-compliance",GitRepo("https://github.tools.sap/c21s/product-sapcf-compliance",username="istio-serviceuser",password="((GITHUB_TOOLS_SAP_TOKEN))"))
 
     with pipeline.job("cf-for-k8s") as job:
-        cf_for_k8s_gardener = job.get("cf-for-k8s-gardener",trigger=False)
-        job.get("7:00",trigger=True)
         shoot = "uli"
         certificate_secret = "CERTIFICATE_" + shoot.upper()
+        domain="cf." + shoot + ".istio.shoot.canary.k8s-hana.ondemand.com"
+        api_endpoint = "https://api." + domain
 
+        def cf_admin_password(gardener_kubeconfig_content):
+            kubeconfig = shoot_kubeconfig(shoot)
+            kubeconfig.load()
+            core = kubernetes.client.CoreV1Api(kubernetes.client.ApiClient())
+            uaa_config = yaml.full_load(core.read_namespaced_config_map("uaa-config-ver-1", "cf-system").data["uaa.yml"])
+            return uaa_config['scim']['users'][0].split("|")[1]
+
+        def cf_wait_for_load_balancer(api_endpoint):
+            while True:
+                try:
+                    r = requests.get(api_endpoint)
+                    break
+                except Exception as exc:
+                    print(exc)
+                    print("Load balancer not ready, waiting a bit...")
+                    time.sleep(10.0)
+
+        cf_for_k8s_gardener = job.get("cf-for-k8s-gardener",trigger=False)
+        job.get("7:00",trigger=True)
 
         @job.task( secrets={"gardener_kubeconfig_content": "GARDENER_KUBECONFIG_CONTENT","gcr_admin_credentials" : "GCR_ADMIN_CREDENTIALS", "image_pull_secrets" : "IMAGE_PULL_SECRETS", 
                 "certificate" : OptionalSecret(certificate_secret),"vault_role_id" : OptionalSecret("VAULT_ROLE_ID") , "vault_secret_id" : OptionalSecret("VAULT_SECRET_ID") },timeout="30m")
@@ -67,24 +118,10 @@ with Pipeline("py-cicd",image_resource={"type": "docker-image","source": {"repos
 
         @job.task(secrets={"gardener_kubeconfig_content": "GARDENER_KUBECONFIG_CONTENT"},timeout="30m")
         def upstream_tests(gardener_kubeconfig_content):
-            kubeconfig = shoot_kubeconfig(shoot)
-            kubeconfig.load()
-            core = kubernetes.client.CoreV1Api(kubernetes.client.ApiClient())
-            uaa_config = yaml.full_load(core.read_namespaced_config_map("uaa-config-ver-1", "cf-system").data["uaa.yml"])
-            password = uaa_config['scim']['users'][0].split("|")[1]
-            domain="cf." + shoot + ".istio.shoot.canary.k8s-hana.ondemand.com"
-            api_endpoint = "https://api." + domain
-            while True:
-                try:
-                    r = requests.get(api_endpoint)
-                    break
-                except Exception as exc:
-                    print(exc)
-                    print("Load balancer not ready, waiting a bit...")
-                    time.sleep(10.0)
+            cf_wait_for_load_balancer(api_endpoint)
             os.environ['SMOKE_TEST_API_ENDPOINT'] = api_endpoint
             os.environ['SMOKE_TEST_USERNAME'] = "admin"
-            os.environ['SMOKE_TEST_PASSWORD'] = password
+            os.environ['SMOKE_TEST_PASSWORD'] = cf_admin_password(gardener_kubeconfig_content)
             os.environ['SMOKE_TEST_APPS_DOMAIN'] = domain
             print("Running tests against " + api_endpoint)
             shell(["go","test","-v","."],cwd=os.path.join(cf_for_k8s,"tests/smoke"))
@@ -93,4 +130,21 @@ with Pipeline("py-cicd",image_resource={"type": "docker-image","source": {"repos
 
         @job.task(secrets={"gardener_kubeconfig_content": "GARDENER_KUBECONFIG_CONTENT"},timeout="30m")
         def compliance_test(gardener_kubeconfig_content):
-            print(product_sapcf_compliance)
+            cf_wait_for_load_balancer(api_endpoint)
+            shell(["cf","api",api_endpoint])
+            shell(["cf","auth","admin",Password(cf_admin_password(gardener_kubeconfig_content))])
+            shell([product_sapcf_compliance + "/components/sapcf-test/scripts/smoke_tests/test_nginx_buildpack.sh","fake-context.json"])
+
+
+    with pipeline.job("bump-cf-for-k8s-gardener") as job:
+        cf_for_k8s_gardener = job.get("cf-for-k8s-gardener",trigger=False)
+        cf_for_k8s = job.get("cf-for-k8s",trigger=True)
+
+        @job.task(outputs=["out"])
+        def bump_cf_for_k8s_gardener(out):
+            with bump_repo(cf_for_k8s_gardener,os.path.join(out,"cf-for-k8s-gardener")):
+                with yaml_replace('vendir.yml') as content:
+                    print("Using ref for cr-for-k8s: {}".format(ref))
+                    vendir['directories'][0]['contents']['git']['ref'] = cf_for_k8s.ref
+ 
+        job.put("cf-for-k8s-gardener",params={"repository": "out/cf-for-k8s-gardener","rebase": True})
