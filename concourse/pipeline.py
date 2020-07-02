@@ -60,10 +60,14 @@ with Pipeline("py-cicd", image_resource={"type": "docker-image", "source": {"rep
     pipeline.resource("7:00", Cron("0 0 7 * * 1-5"))
     pipeline.resource("cf-for-k8s-gardener",
                       GitRepo("https://github.com/akhinos/cf-for-k8s-gardener", username="akhinos", password="((CONCOURSE_WDF_PASSWORD))"))
+    pipeline.resource("cc-fixes",
+                      GitRepo("https://github.com/akhinos/cc_fixes"))
     pipeline.resource("cf-for-k8s",
                       GitRepo("https://github.com/cloudfoundry/cf-for-k8s", tag_filter="v*"))
     pipeline.resource("product-sapcf-compliance",
                       GitRepo("https://github.tools.sap/c21s/product-sapcf-compliance", username="istio-serviceuser", password="((GITHUB_TOOLS_SAP_TOKEN))"))
+    pipeline.resource("cloud-controller-ng-image",
+                      DockerImage("gcr.io/peripli/cloud-controller-ng",username="_json_key",password="((GCP_PERIPLI_REGISTRY_CREDENTIALS))"))
 
     with pipeline.job("bump-cf-for-k8s-gardener") as job:
         cf_for_k8s_gardener = job.get("cf-for-k8s-gardener", trigger=False)
@@ -81,6 +85,27 @@ with Pipeline("py-cicd", image_resource={"type": "docker-image", "source": {"rep
 
         job.put("cf-for-k8s-gardener",
                 params={"repository": "out/cf-for-k8s-gardener", "rebase": True})
+
+    with pipeline.job("patch-cc-ng-image") as job:
+        cf_for_k8s_gardener = job.get("cf-for-k8s-gardener", trigger=False)
+        cf_for_k8s = job.get("cf-for-k8s", trigger=True)
+        cc_fixes = job.get("cc-fixes", trigger=True)
+
+        @job.task(outputs=["out"])
+        def extract_base_image(out):
+            with open(os.path.join(cf_for_k8s.directory(),"config/_ytt_lib/github.com/cloudfoundry/capi-k8s-release/values/images.yml"),'r') as f:
+                base_image = yaml.full_load(f.read())["images"]["ccng"]
+                with open(os.path.join(out,"build-args.json"),'w') as f:
+                    f.write(json.dumps({"BASE_IMAGE" : base_image}))
+
+        cloud_controller_ng_image = job.put("cloud-controller-ng-image",
+                params={"build": "cc-fixes", "build_args_file": "out/build-args.json", "tag_as_latest": True})
+
+        @job.task(outputs=["out"])
+        def bump_image(out):
+            digest = cloud_controller_ng_image.digest()
+            with bump_repo(cf_for_k8s_gardener.directory(), os.path.join(out, "cf-for-k8s-gardener")):
+                shell(["sed", "-i", "-e", "s|capi: gcr\.io/peripli/cloud-controller-ng.*|capi: gcr\.io/peripli/cloud-controller-ng@{digest}|g".format(digest=digest),"overlays/config.yaml"])
 
     with pipeline.job("cf-for-k8s") as job:
         shoot = "uli"
