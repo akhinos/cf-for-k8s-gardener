@@ -10,4 +10,4 @@ spec:
   sources:
   #@overlay/match by=findJavaBuildpack 
   #@overlay/replace
-    - image: "gcr.io/peripli/java:1.7.1"
+    - image: gcr.io/peripli/java@sha256:6b28aeda9e2ea37bda32f02c204a5253823b8d2ac06595ce4279c6f4cb3e49b9
