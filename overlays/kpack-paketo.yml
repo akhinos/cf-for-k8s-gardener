@@ -1,0 +1,13 @@
+#@ load("@ytt:overlay", "overlay")
+
+#@ def findJavaBuildpack(index, left, right):
+#@  return "java" in left["image"]
+#@ end
+
+#@overlay/match by=overlay.subset({"kind":"Store", "metadata":{"name":"cf-buildpack-store"}})
+---
+spec:
+  sources:
+  #@overlay/match by=findJavaBuildpack 
+  #@overlay/replace
+    - image: "gcr.io/peripli/java:1.7.1"
