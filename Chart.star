@@ -58,7 +58,7 @@ def _set_domain(self,k8s):
   self.app_domains= [ self.domain ]
 
 def template(self,glob=""):
-  return self.ytt( inject("shalm2ytt",self=self), "overlays", inject("kubecf-compatibility",self=self) )
+  return self.ytt( inject("shalm2ytt",self=self), "overlays")
 
 def apply(self,k8s):
   self._set_domain(k8s)
